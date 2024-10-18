@@ -15,7 +15,7 @@ struct RootChainRoot : IComponentData
     public float Damping;
 }
 
-struct VertetNode : IComponentData
+struct VerletNode : IComponentData
 {
     public float3 LastPosition;
     public float Mass;
@@ -76,7 +76,7 @@ partial class FlopplyBitBaking : SystemBase
             {
                 var position = SystemAPI.GetComponent<LocalToWorld>(chain[i].Entity).Position;
                 var dist = math.distance(lastPosition, position);
-                cmd.AddComponent(chain[i].Entity, new VertetNode
+                cmd.AddComponent(chain[i].Entity, new VerletNode
                 {
                     LastPosition = position,
                     Mass = 1,
@@ -122,7 +122,7 @@ partial class FlopplyBitSystem : SystemBase
 
         var deltaTimeSqrd = SystemAPI.Time.DeltaTime * SystemAPI.Time.DeltaTime;
 
-        foreach (var (node, trans) in SystemAPI.Query<RefRW<VertetNode>, RefRW<LocalTransform>>())
+        foreach (var (node, trans) in SystemAPI.Query<RefRW<VerletNode>, RefRW<LocalTransform>>())
         {
             var force = GRAVITY * node.ValueRW.Mass;
             var nextPos = trans.ValueRW.Position * 2 - node.ValueRW.LastPosition + (force / node.ValueRW.Mass) * deltaTimeSqrd;
